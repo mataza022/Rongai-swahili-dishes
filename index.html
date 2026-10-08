@@ -1,0 +1,2661 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rongai Swahili Dishes - Authentic Coastal Flavor</title>
+
+    <!-- Updated Tab Icon (Favicon) -->
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Firebase SDK (Modular via CDN) -->
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js"
+        }
+      }
+    </script>
+
+    <style>
+      /* --- Reset & Base Styles --- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #fbf9f6;
+        color: #2d2d2d;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* --- Utility Animations --- */
+      @keyframes slideDown {
+        from {
+          transform: translateY(-100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes scaleIn {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      @keyframes float {
+        0% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-10px) rotate(2deg);
+        }
+        100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+      }
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 50%;
+        }
+        100% {
+          background-position: 200% 50%;
+        }
+      }
+      @keyframes pulseGlow {
+        0%,
+        100% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* --- HEADER --- */
+      header {
+        background: #ffffff;
+        color: #2d2d2d;
+        padding: 15px 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        animation: slideDown 0.8s ease-out;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+      .logo-img {
+        width: 70px;
+        height: 70px;
+        margin-right: 15px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e8d5b5;
+        transition: transform 0.3s ease;
+      }
+      .logo-img:hover {
+        transform: scale(1.05) rotate(-5deg);
+      }
+
+      .logo-text h1 {
+        font-size: 2rem;
+        color: #2d2d2d;
+        line-height: 1;
+        letter-spacing: -0.5px;
+      }
+      .logo-text span {
+        font-size: 0.9rem;
+        color: #7a8c6f;
+        font-weight: 600;
+        letter-spacing: 2px;
+      }
+
+      nav ul {
+        display: flex;
+        list-style: none;
+        align-items: center;
+        gap: 10px;
+      }
+      nav ul li a {
+        color: #2d2d2d;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1rem;
+        padding: 8px 16px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+      nav ul li a:hover {
+        background: #f1ebe4;
+        transform: translateY(-2px);
+      }
+
+      .cart-icon {
+        position: relative;
+        font-size: 1.4rem;
+        padding: 8px 12px;
+        background: #e8d5b5;
+        border-radius: 50%;
+        color: #2d2d2d;
+        transition: all 0.3s ease;
+      }
+      .cart-icon:hover {
+        background: #2d2d2d;
+        color: #ffffff;
+        transform: scale(1.1) rotate(-10deg);
+      }
+      .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #d9534f;
+        color: white;
+        font-size: 0.7rem;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(217, 83, 79, 0.3);
+        animation: float 2s ease-in-out infinite;
+      }
+
+      /* --- USER MENU --- */
+      .user-menu {
+        position: relative;
+        display: inline-block;
+        margin-left: 10px;
+      }
+      .user-btn {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #2d2d2d;
+      }
+      .user-btn:hover {
+        background: #f1ebe4;
+        color: #7a8c6f;
+      }
+      .user-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: #ffffff;
+        min-width: 200px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        padding: 10px 0;
+        z-index: 1000;
+        margin-top: 10px;
+      }
+      .user-dropdown.show {
+        display: block;
+        animation: fadeInUp 0.3s ease-out;
+      }
+      .user-dropdown a {
+        color: #2d2d2d;
+        padding: 10px 20px;
+        text-decoration: none;
+        display: block;
+        transition: all 0.2s ease;
+      }
+      .user-dropdown a:hover {
+        background: #fbf9f6;
+        color: #7a8c6f;
+      }
+      .user-dropdown .user-points {
+        padding: 10px 20px;
+        border-bottom: 1px solid #eee;
+        font-weight: bold;
+        color: #7a8c6f;
+      }
+
+      /* --- HERO SECTION --- */
+      .hero {
+        background: linear-gradient(135deg, #fbf9f6 0%, #ffffff 100%);
+        color: #2d2d2d;
+        text-align: center;
+        padding: 100px 20px 80px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+        animation: fadeIn 1.5s ease-out;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            circle at 30% 40%,
+            rgba(232, 213, 181, 0.3) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            circle at 70% 60%,
+            rgba(122, 140, 111, 0.2) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+        animation: pulseGlow 6s ease-in-out infinite;
+      }
+      .halal-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 2px solid #e8d5b5;
+        background: #ffffff;
+        padding: 5px;
+        animation: float 3s ease-in-out infinite;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      }
+      .halal-badge img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 50%;
+      }
+
+      .hero h2 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+        letter-spacing: -1px;
+        background: linear-gradient(to right, #2d2d2d, #7a8c6f);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto 40px;
+        color: #666;
+      }
+
+      /* --- DISH SHOWCASE --- */
+      .dish-showcase {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin: 40px auto;
+        flex-wrap: wrap;
+      }
+      .dish-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        animation: fadeInUp 0.8s ease-out forwards;
+        opacity: 0;
+      }
+      .dish-item:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .dish-item:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .dish-item:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .dish-item:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+
+      .dish-item:hover {
+        transform: translateY(-10px);
+      }
+
+      .dish-circle {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        border: 3px solid #e8d5b5;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+      .dish-circle:hover {
+        box-shadow: 0 8px 35px rgba(232, 213, 181, 0.5);
+        transform: scale(1.05);
+      }
+      .dish-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .dish-name {
+        color: #2d2d2d;
+        font-weight: 600;
+        font-size: 14px;
+        background: #ffffff;
+        padding: 4px 12px;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      /* --- BUTTONS --- */
+      .btn {
+        display: inline-block;
+        background: #2d2d2d;
+        color: #ffffff;
+        padding: 14px 35px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        background: #7a8c6f;
+        color: #ffffff;
+      }
+
+      /* --- MENU SECTION --- */
+      .section-title {
+        text-align: center;
+        margin-bottom: 40px;
+        color: #2d2d2d;
+        font-size: 2.5rem;
+        font-weight: 700;
+        position: relative;
+        padding-bottom: 15px;
+      }
+      .section-title:after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: #e8d5b5;
+        border-radius: 2px;
+      }
+
+      .menu-category {
+        margin-bottom: 50px;
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+        animation: fadeIn 1s ease-out;
+      }
+      .category-title {
+        font-size: 1.6rem;
+        color: #2d2d2d;
+        margin-bottom: 25px;
+        padding-left: 15px;
+        border-left: 4px solid #7a8c6f;
+      }
+      .menu-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+      }
+      .menu-item {
+        background: #fbf9f6;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+        border: 1px solid #eee;
+        position: relative;
+        animation: fadeInUp 0.8s ease-out forwards;
+        opacity: 0;
+      }
+      .menu-item:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .menu-item:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .menu-item:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .menu-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        border-color: #e8d5b5;
+      }
+
+      .item-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+        transition: transform 0.5s ease;
+      }
+      .menu-item:hover .item-image {
+        transform: scale(1.03);
+      }
+      .item-content {
+        padding: 20px;
+      }
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        border-bottom: 1px dashed #eee;
+        padding-bottom: 10px;
+      }
+      .item-name {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #2d2d2d;
+      }
+      .item-price {
+        font-weight: 700;
+        color: #7a8c6f;
+        font-size: 1.1rem;
+      }
+      .item-desc {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+      }
+
+      /* --- PORTION SELECTOR --- */
+      .size-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        gap: 10px;
+        margin: 15px 0;
+        padding: 10px;
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #eee;
+      }
+      .size-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        padding: 5px 15px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        flex: 1;
+      }
+      .size-option:hover {
+        background: #fbf9f6;
+      }
+      .size-option.selected {
+        background: #2d2d2d;
+        color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      .size-option.selected span {
+        color: #ffffff;
+      }
+      .size-option img {
+        width: 35px;
+        height: 35px;
+        object-fit: contain;
+        margin-bottom: 4px;
+      }
+      .size-option span {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #2d2d2d;
+      }
+
+      /* --- ADD TO CART BUTTON --- */
+      .add-to-cart {
+        background: #2d2d2d;
+        color: #ffffff;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .add-to-cart:hover {
+        background: #7a8c6f;
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(122, 140, 111, 0.3);
+      }
+
+      /* --- SEARCH BAR FIX --- */
+      .search-container {
+        margin: -20px 0 40px;
+        display: flex;
+        justify-content: center;
+      }
+      .search-bar {
+        display: flex;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border-radius: 30px;
+        overflow: hidden;
+        background: #fff;
+        align-items: center;
+      }
+      .search-bar input {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        background: transparent;
+        color: #2d2d2d;
+      }
+      .search-bar button {
+        background: #2d2d2d;
+        color: #fff;
+        border: none;
+        padding: 0 20px;
+        height: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .search-bar button:hover {
+        background: #7a8c6f;
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 40px;
+        font-size: 1.2rem;
+        color: #666;
+        display: none;
+      }
+
+      /* --- CONTACT & FOOTER --- */
+      .contact {
+        background: #2d2d2d;
+        color: #ffffff;
+        padding: 60px 0;
+        text-align: center;
+        border-top: 5px solid #e8d5b5;
+      }
+      .contact h3 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: #ffffff;
+      }
+      .phone-numbers {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+      }
+      .phone-numbers p:hover {
+        color: #e8d5b5;
+        transform: scale(1.05);
+      }
+      .address {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+      }
+
+      footer {
+        background: #1f1f1f;
+        color: #ffffff;
+        text-align: center;
+        padding: 30px 0;
+        border-top: 1px solid #333;
+      }
+
+      /* --- MODALS --- */
+      .auth-modal,
+      .welcome-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(45, 45, 45, 0.8);
+        backdrop-filter: blur(4px);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+      }
+      .auth-modal.active,
+      .welcome-modal.active {
+        display: flex;
+        animation: fadeIn 0.3s ease-out;
+      }
+      .auth-container,
+      .welcome-content {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 20px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        animation: scaleIn 0.5s ease-out;
+      }
+      .auth-container h2 {
+        text-align: center;
+        color: #2d2d2d;
+        margin-bottom: 25px;
+      }
+      .auth-tabs {
+        display: flex;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #eee;
+      }
+      .auth-tab {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .auth-tab.active {
+        border-bottom: 3px solid #2d2d2d;
+        color: #2d2d2d;
+      }
+      .auth-tab:hover {
+        color: #7a8c6f;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #2d2d2d;
+      }
+      .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: #fbf9f6;
+        transition: all 0.3s ease;
+      }
+      .form-control:focus {
+        border-color: #2d2d2d;
+        box-shadow: 0 0 0 3px rgba(45, 45, 45, 0.1);
+        outline: none;
+      }
+
+      .btn-auth {
+        width: 100%;
+        padding: 14px;
+        background: #2d2d2d;
+        color: #ffffff;
+        border-radius: 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+      }
+      .btn-auth:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        background: #7a8c6f;
+      }
+
+      .welcome-content .bonus-amount {
+        font-size: 4rem;
+        font-weight: bold;
+        color: #e8d5b5;
+        margin: 20px 0;
+      }
+      .welcome-btn {
+        background: #2d2d2d;
+        color: #ffffff;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .welcome-btn:hover {
+        background: #7a8c6f;
+        transform: scale(1.05);
+      }
+
+      /* --- LOYALTY DASHBOARD --- */
+      #loyalty-content .points-card {
+        background: #fbf9f6;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #eee;
+      }
+      #loyalty-content .level-card {
+        background: #fbf9f6;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #eee;
+      }
+      #rewards-grid .reward-card {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #eee;
+        transition: all 0.3s ease;
+      }
+      #rewards-grid .reward-card.available {
+        border-color: #7a8c6f;
+        background: #fbf9f6;
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 12px;
+        color: #ffffff;
+        z-index: 10002;
+        animation: fadeInUp 0.5s ease-out;
+        max-width: 350px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+      .notification.success {
+        background: #2d2d2d;
+      }
+      .notification.error {
+        background: #d9534f;
+      }
+      .notification.info {
+        background: #5bc0de;
+      }
+
+      /* --- RESPONSIVE --- */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          text-align: center;
+          gap: 15px;
+        }
+        nav ul {
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+        nav ul li {
+          margin: 5px;
+        }
+        .hero h2 {
+          font-size: 2.5rem;
+        }
+        .menu-items {
+          grid-template-columns: 1fr;
+        }
+        .logo {
+          justify-content: center;
+        }
+        .dish-showcase {
+          gap: 20px;
+        }
+        .dish-circle {
+          width: 100px;
+          height: 100px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header>
+      <div class="container header-content">
+        <div class="logo">
+          <img
+            src="logo.png"
+            alt="Rongai Swahili Dishes Logo"
+            class="logo-img"
+            onerror="handleImageError(this, 'logo')"
+          />
+          <div class="logo-text">
+            <h1>RONGAI SWAHILI DISHES</h1>
+            <span>AUTHENTIC COASTAL FLAVOR</span>
+          </div>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li>
+              <a href="cart.html" class="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+              </a>
+            </li>
+            <li>
+              <div class="user-menu">
+                <button class="user-btn" onclick="toggleUserMenu()">
+                  <i class="fas fa-user-circle"></i>
+                  <span id="user-name-display">Account</span>
+                  <i class="fas fa-chevron-down" style="font-size: 0.8rem"></i>
+                </button>
+                <div class="user-dropdown" id="user-dropdown">
+                  <div class="user-points">
+                    <i class="fas fa-star" style="color: #e8d5b5"></i>
+                    <span id="dropdown-points">0</span> Points
+                  </div>
+                  <a
+                    href="javascript:void(0)"
+                    onclick="openAuthModal('register')"
+                    id="login-link"
+                    >Login / Register</a
+                  >
+                  <a
+                    href="javascript:void(0)"
+                    onclick="showLoyaltyDashboard()"
+                    id="dashboard-link"
+                    style="display: none"
+                    >My Rewards</a
+                  >
+                  <a
+                    href="javascript:void(0)"
+                    onclick="logoutUser()"
+                    id="logout-link"
+                    style="display: none"
+                    >Logout</a
+                  >
+                </div>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Auth Modal -->
+    <div class="auth-modal" id="auth-modal">
+      <div class="auth-container">
+        <button
+          class="auth-close"
+          onclick="closeAuthModal()"
+          style="
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+          "
+        >
+          ✕
+        </button>
+        <h2>Join Our Loyalty Program</h2>
+        <div class="auth-tabs">
+          <div class="auth-tab active" onclick="showAuthTab('register')">
+            Register
+          </div>
+          <div class="auth-tab" onclick="showAuthTab('login')">Login</div>
+        </div>
+
+        <div id="register-form">
+          <div class="form-group">
+            <label for="reg-name">Full Name *</label>
+            <input
+              type="text"
+              id="reg-name"
+              class="form-control"
+              placeholder="Your full name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Email Address *</label>
+            <input
+              type="email"
+              id="reg-email"
+              class="form-control"
+              placeholder="your.email@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="reg-phone">Phone Number *</label>
+            <input
+              type="tel"
+              id="reg-phone"
+              class="form-control"
+              placeholder="e.g. 0712345678"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Password *</label>
+            <input
+              type="password"
+              id="reg-password"
+              class="form-control"
+              placeholder="Create a password"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="reg-confirm">Confirm Password *</label>
+            <input
+              type="password"
+              id="reg-confirm"
+              class="form-control"
+              placeholder="Confirm your password"
+              required
+            />
+          </div>
+          <button class="btn-auth" onclick="registerUser()">
+            Register & Get 50 Free Points
+          </button>
+          <div
+            class="auth-divider"
+            style="
+              text-align: center;
+              margin: 15px 0;
+              color: #999;
+              position: relative;
+            "
+          >
+            <span
+              style="
+                background: #fff;
+                padding: 0 15px;
+                position: relative;
+                z-index: 1;
+              "
+              >or continue with</span
+            >
+          </div>
+          <div class="social-login" style="display: flex; gap: 15px">
+            <button
+              class="social-btn google"
+              onclick="socialLogin('google')"
+              style="
+                flex: 1;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                font-weight: 500;
+              "
+            >
+              <i class="fab fa-google"></i> Google
+            </button>
+          </div>
+        </div>
+
+        <div id="login-form" style="display: none">
+          <div class="form-group">
+            <label for="login-email">Email Address *</label>
+            <input
+              type="email"
+              id="login-email"
+              class="form-control"
+              placeholder="your.email@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password *</label>
+            <input
+              type="password"
+              id="login-password"
+              class="form-control"
+              placeholder="Your password"
+              required
+            />
+          </div>
+          <button class="btn-auth" onclick="loginUser()">Login</button>
+          <div
+            class="auth-divider"
+            style="
+              text-align: center;
+              margin: 15px 0;
+              color: #999;
+              position: relative;
+            "
+          >
+            <span
+              style="
+                background: #fff;
+                padding: 0 15px;
+                position: relative;
+                z-index: 1;
+              "
+              >or continue with</span
+            >
+          </div>
+          <div class="social-login" style="display: flex; gap: 15px">
+            <button
+              class="social-btn google"
+              onclick="socialLogin('google')"
+              style="
+                flex: 1;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                font-weight: 500;
+              "
+            >
+              <i class="fab fa-google"></i> Google
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Welcome Bonus Modal -->
+    <div class="welcome-modal" id="welcome-modal">
+      <div class="welcome-content">
+        <i
+          class="fas fa-gift"
+          style="
+            font-size: 4rem;
+            color: #e8d5b5;
+            margin-bottom: 15px;
+            display: block;
+          "
+        ></i>
+        <h2>🎉 Welcome to Rongai Swahili Dishes!</h2>
+        <div class="bonus-amount">+50 Points</div>
+        <p>
+          You've received <strong>50 free loyalty points</strong> for signing
+          up! Start earning more points with every order.
+        </p>
+        <button class="welcome-btn" onclick="closeWelcomeModal()">
+          Awesome! Let's Go
+        </button>
+      </div>
+    </div>
+
+    <!-- Loyalty Dashboard Modal -->
+    <div class="auth-modal" id="loyalty-modal">
+      <div class="auth-container" style="max-width: 800px">
+        <button
+          class="auth-close"
+          onclick="closeLoyaltyModal()"
+          style="
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+          "
+        >
+          ✕
+        </button>
+        <h2 style="color: #2d2d2d">🏆 My Rewards</h2>
+        <div id="loyalty-content">
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+              margin-bottom: 20px;
+            "
+          >
+            <div class="points-card">
+              <div
+                style="font-size: 2.5rem; font-weight: bold; color: #2d2d2d"
+                id="loyalty-points"
+              >
+                0
+              </div>
+              <div style="color: #666">Total Points</div>
+            </div>
+            <div class="level-card">
+              <div
+                style="font-size: 2.5rem; font-weight: bold; color: #e8d5b5"
+                id="loyalty-level"
+              >
+                ⭐
+              </div>
+              <div style="color: #666">Loyalty Level</div>
+            </div>
+          </div>
+          <div style="margin-bottom: 20px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 8px;
+              "
+            >
+              <span id="next-reward-label" style="color: #2d2d2d"
+                >Progress to next reward</span
+              >
+              <span id="progress-percentage">0%</span>
+            </div>
+            <div
+              style="
+                width: 100%;
+                height: 8px;
+                background: #eee;
+                border-radius: 4px;
+                overflow: hidden;
+              "
+            >
+              <div
+                id="progress-fill"
+                style="
+                  height: 100%;
+                  background: #2d2d2d;
+                  border-radius: 4px;
+                  width: 0%;
+                  transition: width 1s ease;
+                "
+              ></div>
+            </div>
+            <div
+              style="
+                text-align: center;
+                margin-top: 8px;
+                font-size: 0.9rem;
+                color: #666;
+              "
+              id="progress-text"
+            >
+              0 / 300 points needed
+            </div>
+          </div>
+          <h3 style="color: #2d2d2d; margin: 20px 0 15px">Available Rewards</h3>
+          <div
+            id="rewards-grid"
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+              gap: 15px;
+            "
+          ></div>
+          <div
+            style="
+              margin-top: 20px;
+              text-align: center;
+              font-size: 0.9rem;
+              color: #666;
+            "
+          >
+            <i class="fas fa-info-circle"></i> Points are automatically awarded
+            when orders are completed.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+      <div class="halal-badge">
+        <img
+          src="halal.png"
+          alt="Halal Certified"
+          onerror="this.style.display='none'"
+        />
+      </div>
+      <div class="hero-content">
+        <h2>Authentic Coastal Flavor</h2>
+        <p>
+          Experience the taste of the Swahili coast with our delicious and
+          authentic dishes.
+        </p>
+        <div class="dish-showcase">
+          <div class="dish-item">
+            <div class="dish-circle">
+              <img
+                src="pilau.jpg"
+                alt="Pilau"
+                onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:#2d2d2d; font-weight:bold; font-size:18px;\'>PILAU</div>';"
+              />
+            </div>
+            <div class="dish-name">Pilau</div>
+          </div>
+          <div class="dish-item">
+            <div class="dish-circle">
+              <img
+                src="Beef Biriyani.jpg"
+                alt="Biryani"
+                onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:#2d2d2d; font-weight:bold; font-size:18px;\'>BIRYANI</div>';"
+              />
+            </div>
+            <div class="dish-name">Biryani</div>
+          </div>
+          <div class="dish-item">
+            <div class="dish-circle">
+              <img
+                src="shawarma.jpg"
+                alt="Shawarma"
+                onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:#2d2d2d; font-weight:bold; font-size:18px;\'>SHAWARMA</div>';"
+              />
+            </div>
+            <div class="dish-name">Shawarma</div>
+          </div>
+          <div class="dish-item">
+            <div class="dish-circle">
+              <img
+                src="fries.jpg"
+                alt="Fries"
+                onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:#2d2d2d; font-weight:bold; font-size:16px;\'>FRIES</div>';"
+              />
+            </div>
+            <div class="dish-name">Fries</div>
+          </div>
+        </div>
+        <a href="#menu" class="btn">Explore Our Menu</a>
+      </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section class="container" id="menu">
+      <h2 class="section-title">Our Menu</h2>
+
+      <div class="search-container">
+        <div class="search-bar">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search for dishes..."
+          />
+          <button id="search-button">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="no-results" id="no-results">
+        <p>No items found matching your search.</p>
+      </div>
+
+      <!-- Main Meals -->
+      <div class="menu-category" data-category="main-meals">
+        <h3 class="category-title">MAIN MEALS</h3>
+        <div class="menu-items">
+          <!-- Pilau -->
+          <div class="menu-item">
+            <img
+              src="pilau.jpg"
+              alt="Pilau"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Pilau</span>
+                <span class="item-price">320 Ksh</span>
+              </div>
+              <p class="item-desc">
+                Spiced rice with tender meat, cooked to perfection.
+              </p>
+              <div class="size-indicator" id="size-pilau">
+                <div
+                  class="size-option selected"
+                  onclick="selectSize('pilau', 'Pilau Large', 320, 'pilau.jpg', this)"
+                >
+                  <img
+                    src="largeplate.png"
+                    alt="Large"
+                    onerror="this.style.display='none'"
+                  />
+                  <span>Large</span>
+                </div>
+                <div
+                  class="size-option"
+                  onclick="selectSize('pilau', 'Pilau Small', 220, 'pilau.jpg', this)"
+                >
+                  <img
+                    src="smallplate.png"
+                    alt="Small"
+                    onerror="this.style.display='none'"
+                  />
+                  <span>Small</span>
+                </div>
+              </div>
+              <button class="add-to-cart" onclick="addToCartWithSize('pilau')">
+                Add to Cart
+              </button>
+            </div>
+          </div>
+
+          <!-- Beef Biryani -->
+          <div class="menu-item">
+            <img
+              src="Beef Biriyani.jpg"
+              alt="Beef Biryani"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Beef Biryani</span>
+                <span class="item-price">470 Ksh</span>
+              </div>
+              <p class="item-desc">
+                Fragrant rice dish with tender beef and aromatic spices.
+              </p>
+              <div class="size-indicator" id="size-beef-biryani">
+                <div
+                  class="size-option selected"
+                  onclick="selectSize('beef-biryani', 'Beef Biryani Large', 470, 'Beef Biriyani.jpg', this)"
+                >
+                  <img
+                    src="largeplate.png"
+                    alt="Large"
+                    onerror="this.style.display='none'"
+                  />
+                  <span>Large</span>
+                </div>
+                <div
+                  class="size-option"
+                  onclick="selectSize('beef-biryani', 'Beef Biryani Small', 370, 'Beef Biriyani.jpg', this)"
+                >
+                  <img
+                    src="smallplate.png"
+                    alt="Small"
+                    onerror="this.style.display='none'"
+                  />
+                  <span>Small</span>
+                </div>
+              </div>
+              <button
+                class="add-to-cart"
+                onclick="addToCartWithSize('beef-biryani')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+
+          <!-- Chicken Biryani -->
+          <div class="menu-item">
+            <img
+              src="chickenbiryani.jpg"
+              alt="Chicken Biryani"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Chicken Biryani</span>
+                <span class="item-price">470 Ksh</span>
+              </div>
+              <p class="item-desc">
+                Fragrant rice dish with tender chicken and aromatic spices.
+              </p>
+              <div class="size-indicator" id="size-chicken-biryani">
+                <div
+                  class="size-option selected"
+                  onclick="selectSize('chicken-biryani', 'Chicken Biryani Large', 470, 'chickenbiryani.jpg', this)"
+                >
+                  <img
+                    src="largeplate.png"
+                    alt="Large"
+                    onerror="this.style.display='none'"
+                  />
+                  <span>Large</span>
+                </div>
+                <div
+                  class="size-option"
+                  onclick="selectSize('chicken-biryani', 'Chicken Biryani Small', 370, 'chickenbiryani.jpg', this)"
+                >
+                  <img
+                    src="smallplate.png"
+                    alt="Small"
+                    onerror="this.style.display='none'"
+                  />
+                  <span>Small</span>
+                </div>
+              </div>
+              <button
+                class="add-to-cart"
+                onclick="addToCartWithSize('chicken-biryani')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+
+          <!-- Swahili Platter -->
+          <div class="menu-item">
+            <img
+              src="platter.jpg"
+              alt="Swahili Platter"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Swahili Platter</span>
+                <span class="item-price">1000 Ksh</span>
+              </div>
+              <p class="item-desc">
+                A grand feast: biryani, pilau, shawarma, fries and more – serves
+                2-3
+              </p>
+              <button
+                class="add-to-cart"
+                onclick="addToCart('swahili-platter', 'Swahili Platter', 1000, 'platter.jpg')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drinks -->
+      <div class="menu-category" data-category="drinks">
+        <h3 class="category-title">DRINKS</h3>
+        <div class="menu-items">
+          <!-- Passion Juice -->
+          <div class="menu-item">
+            <img
+              src="passionjuice.jpg"
+              alt="Passion Juice"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Passion Juice Large</span
+                ><span class="item-price">100 Ksh</span>
+              </div>
+              <p class="item-desc">
+                Freshly squeezed sweet and tangy passion fruit juice.
+              </p>
+              <button
+                class="add-to-cart"
+                onclick="addToCart('passionjuice-large', 'Passion Juice Large', 100, 'passionjuice.jpg')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+          <div class="menu-item">
+            <img
+              src="passionjuice.jpg"
+              alt="Passion Juice"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Passion Juice Small</span
+                ><span class="item-price">50 Ksh</span>
+              </div>
+              <p class="item-desc">
+                A perfect portion of sweet and tangy passion juice.
+              </p>
+              <button
+                class="add-to-cart"
+                onclick="addToCart('passionjuice-small', 'Passion Juice Small', 50, 'passionjuice.jpg')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+          <!-- Mango Juice -->
+          <div class="menu-item">
+            <img
+              src="mangojuice.jpg"
+              alt="Mango Juice"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Mango Juice Large</span
+                ><span class="item-price">100 Ksh</span>
+              </div>
+              <p class="item-desc">Sweet and tropical mango juice.</p>
+              <button
+                class="add-to-cart"
+                onclick="addToCart('mangojuice-large', 'Mango Juice Large', 100, 'mangojuice.jpg')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+          <div class="menu-item">
+            <img
+              src="mangojuice.jpg"
+              alt="Mango Juice"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Mango Juice Small</span
+                ><span class="item-price">50 Ksh</span>
+              </div>
+              <p class="item-desc">
+                A perfect portion of sweet tropical mango.
+              </p>
+              <button
+                class="add-to-cart"
+                onclick="addToCart('mangojuice-small', 'Mango Juice Small', 50, 'mangojuice.jpg')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Snacks & Bites -->
+      <div class="menu-category" data-category="snacks">
+        <h3 class="category-title">SNACKS & BITES</h3>
+        <div class="menu-items">
+          <!-- Shawarma -->
+          <div class="menu-item">
+            <img
+              src="shawarma.jpg"
+              alt="Shawarma"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Shawarma</span
+                ><span class="item-price">200 Ksh</span>
+              </div>
+              <p class="item-desc">
+                Middle-eastern wrap with flavorful meat and fresh vegetables.
+              </p>
+              <button
+                class="add-to-cart"
+                onclick="addToCart('shawarma', 'Shawarma', 200, 'shawarma.jpg')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+          <!-- Loaded Fries -->
+          <div class="menu-item">
+            <img
+              src="loaded fires.png"
+              alt="Loaded Fries"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Loaded Fries</span
+                ><span class="item-price">250 Ksh</span>
+              </div>
+              <p class="item-desc">
+                Crispy fries topped with seasoned meat, cheese sauce, and
+                special spices.
+              </p>
+              <button
+                class="add-to-cart"
+                onclick="addToCart('loaded-fries', 'Loaded Fries', 250, 'loaded fires.png')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sweet Treats -->
+      <div class="menu-category" data-category="sweets">
+        <h3 class="category-title">SWEET TREATS</h3>
+        <div class="menu-items">
+          <!-- Mabuyu Large -->
+          <div class="menu-item">
+            <img
+              src="mabuyu.jpg"
+              alt="Mabuyu"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Mabuyu Large</span
+                ><span class="item-price">150 Ksh</span>
+              </div>
+              <p class="item-desc">
+                Coastal favorite baobab seeds with tangy seasoning.
+              </p>
+              <button
+                class="add-to-cart"
+                onclick="addToCart('mabuyularge', 'Mabuyu Large', 150, 'mabuyu.jpg')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+          <!-- Kashata -->
+          <div class="menu-item">
+            <img
+              src="kashata.jpg"
+              alt="Kashata"
+              class="item-image"
+              onerror="handleImageError(this)"
+            />
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">Kashata</span
+                ><span class="item-price">150 Ksh</span>
+              </div>
+              <p class="item-desc">
+                Sweet coconut candy, traditional coastal treat.
+              </p>
+              <button
+                class="add-to-cart"
+                onclick="addToCart('kashata', 'Kashata', 150, 'kashata.jpg')"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+      <div class="container">
+        <div
+          class="open-status"
+          style="
+            background: #e8d5b5;
+            color: #2d2d2d;
+            padding: 8px 20px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: bold;
+          "
+        >
+          WE ARE OPEN
+        </div>
+        <div class="contact-info">
+          <h3>ORDER NOW</h3>
+          <div class="phone-numbers">
+            <p><i class="fas fa-phone"></i> +254-796143845</p>
+          </div>
+          <div class="address">
+            <p>
+              <i class="fas fa-map-marker-alt"></i> Located at: Masai Lodge
+              Stage
+            </p>
+          </div>
+          <a href="tel:+254796143845" class="btn">Call to Order</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <p>&copy; 2025 Rongai Swahili Dishes - Authentic Coastal Flavor</p>
+        <p>Delicious, Affordable, and Always Fresh!</p>
+      </div>
+    </footer>
+
+    <!-- Main JavaScript Module -->
+    <script type="module">
+      // ========== FIREBASE CONFIGURATION ==========
+      import { initializeApp } from "firebase/app";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+        GoogleAuthProvider,
+        signInWithPopup,
+        sendEmailVerification,
+      } from "firebase/auth";
+      import {
+        getFirestore,
+        collection,
+        doc,
+        setDoc,
+        getDoc,
+        addDoc,
+        updateDoc,
+        query,
+        where,
+        getDocs,
+        serverTimestamp,
+        increment,
+        onSnapshot,
+      } from "firebase/firestore";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyD0BqsNUyYvHK7y4aE-rcm72XJp9N8OhXw",
+        authDomain: "rongai-swahili-dishes.firebaseapp.com",
+        projectId: "rongai-swahili-dishes",
+        storageBucket: "rongai-swahili-dishes.firebasestorage.app",
+        messagingSenderId: "697969909239",
+        appId: "1:697969909239:web:cff21b687d66fd8d2922f2",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+      const googleProvider = new GoogleAuthProvider();
+
+      // ========== UI & CART LOGIC ==========
+      let cartItems = [];
+      let currentSizeSelections = {};
+      let currentUser = null;
+      let orderUnsubscriber = null;
+
+      window.handleImageError = function (img, type = "item") {
+        if (type === "logo") {
+          img.outerHTML = `<div style="width: 70px; height: 70px; border-radius: 50%; background: #2d2d2d; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: #ffffff; font-weight: bold; font-size: 1.2rem;">RS</div>`;
+        } else {
+          img.src = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjBGMEYwIi8+CjxwYXRoIGQ9Ik0xNTAgMTAwQzE2Mi44ODUgMTAwIDE3MyA4OS44ODUzIDE3MyA3N0MxNzMgNjQuMTE0NyAxNjIuODg1IDU0IDE1MCA1NEMxMzcuMTE1IDU0IDEyNyA2NC4xMTQ3IDEyNyA3N0MxMjcgODkuODg1MyAxMzcuMTE1IDEwMCAxNTAgMTAwWiIgZmlsbD0iI0NEQ0RDRCIvPgo8cGF0aCBkPSJNMTUwIDExMEMxNjQuMzU5IDExMCAxNzYgOTguMzU5NCAxNzYgODRDMTc2IDY5LjY0MDYgMTY0LjM1OSA1OCAxNTAgNThDMTM1LjY0MSA1OCAxMjQgNjkuNjQwNiAxMjQgODRDMTI0IDk4LjM1OTQgMTM1LjY0MSAxMTAgMTUwIDExMFoiIGZpbGw9IiNDRENEQ0QiLz4KPC9zdmc+`;
+        }
+      };
+
+      function loadCart() {
+        const savedCart = localStorage.getItem("rongaiSwahiliDishesCart");
+        if (savedCart) cartItems = JSON.parse(savedCart);
+        updateCartCount();
+      }
+
+      function saveCart() {
+        localStorage.setItem(
+          "rongaiSwahiliDishesCart",
+          JSON.stringify(cartItems)
+        );
+        updateCartCount();
+        window.dispatchEvent(new Event("storage"));
+      }
+
+      function updateCartCount() {
+        const totalItems = cartItems.reduce(
+          (total, item) => total + item.quantity,
+          0
+        );
+        document
+          .querySelectorAll(".cart-count")
+          .forEach((el) => (el.textContent = totalItems));
+      }
+
+      function showCartFeedback(message) {
+        let feedbackEl = document.getElementById("cart-feedback");
+        if (!feedbackEl) {
+          feedbackEl = document.createElement("div");
+          feedbackEl.id = "cart-feedback";
+          feedbackEl.style.cssText = `position: fixed; top: 20px; right: 20px; background: #2d2d2d; color: #ffffff; padding: 15px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 10000; transition: all 0.3s ease; max-width: 300px;`;
+          document.body.appendChild(feedbackEl);
+        }
+        feedbackEl.textContent = message;
+        feedbackEl.style.display = "block";
+        feedbackEl.style.opacity = "1";
+        setTimeout(() => {
+          feedbackEl.style.opacity = "0";
+          setTimeout(() => (feedbackEl.style.display = "none"), 300);
+        }, 3000);
+      }
+
+      // ========== PORTION SELECTOR LOGIC ==========
+      window.selectSize = function (baseId, name, price, image, element) {
+        const parent = element.parentElement;
+        parent
+          .querySelectorAll(".size-option")
+          .forEach((el) => el.classList.remove("selected"));
+
+        element.classList.add("selected");
+        currentSizeSelections[baseId] = { name, price, image };
+      };
+
+      window.addToCartWithSize = function (baseId) {
+        if (!currentSizeSelections[baseId]) {
+          const parent = document.getElementById(`size-${baseId}`);
+          const firstOption = parent.querySelector(".size-option");
+          const name =
+            firstOption.querySelector("span").textContent +
+            " " +
+            (baseId === "pilau" || baseId.includes("biryani") ? "Large" : "");
+          const price = parseInt(
+            firstOption.closest(".item-header").querySelector(".item-price")
+              .textContent
+          );
+          const image = firstOption
+            .closest(".menu-item")
+            .querySelector(".item-image").src;
+          currentSizeSelections[baseId] = { name, price, image };
+        }
+
+        const { name, price, image } = currentSizeSelections[baseId];
+        const finalId = baseId + "-" + name.toLowerCase().replace(/\s/g, "-");
+
+        addToCart(finalId, name, price, image);
+
+        const button = document
+          .querySelector(`#size-${baseId}`)
+          .closest(".item-content")
+          .querySelector(".add-to-cart");
+        button.textContent = "Added! ✓";
+        button.style.background = "#7a8c6f";
+        setTimeout(() => {
+          button.textContent = "Add to Cart";
+          button.style.background = "#2d2d2d";
+        }, 1500);
+      };
+
+      window.addToCart = function (id, name, price, image) {
+        const existingItem = cartItems.find((item) => item.id === id);
+        if (existingItem) existingItem.quantity += 1;
+        else cartItems.push({ id, name, price, image, quantity: 1 });
+        saveCart();
+        showCartFeedback(name + " added to cart!");
+      };
+
+      // ========== AUTH FUNCTIONS ==========
+      window.toggleUserMenu = function () {
+        document.getElementById("user-dropdown").classList.toggle("show");
+      };
+      document.addEventListener("click", function (e) {
+        const dropdown = document.getElementById("user-dropdown");
+        const userBtn = document.querySelector(".user-btn");
+        if (
+          dropdown &&
+          !dropdown.contains(e.target) &&
+          !userBtn.contains(e.target)
+        ) {
+          dropdown.classList.remove("show");
+        }
+      });
+
+      window.openAuthModal = function (tab = "register") {
+        document.getElementById("auth-modal").classList.add("active");
+        window.showAuthTab(tab);
+      };
+      window.closeAuthModal = function () {
+        document.getElementById("auth-modal").classList.remove("active");
+      };
+      window.showAuthTab = function (tab) {
+        const tabs = document.querySelectorAll(".auth-tab");
+        tabs.forEach((t) => t.classList.remove("active"));
+        if (tab === "register") {
+          tabs[0].classList.add("active");
+          document.getElementById("register-form").style.display = "block";
+          document.getElementById("login-form").style.display = "none";
+        } else {
+          tabs[1].classList.add("active");
+          document.getElementById("register-form").style.display = "none";
+          document.getElementById("login-form").style.display = "block";
+        }
+      };
+
+      window.registerUser = async function () {
+        const name = document.getElementById("reg-name").value.trim();
+        const email = document.getElementById("reg-email").value.trim();
+        const phone = document.getElementById("reg-phone").value.trim();
+        const password = document.getElementById("reg-password").value;
+        const confirm = document.getElementById("reg-confirm").value;
+
+        if (!name || !email || !phone || !password || !confirm) {
+          showNotification("Please fill in all fields.", "error");
+          return;
+        }
+        if (password !== confirm) {
+          showNotification("Passwords do not match.", "error");
+          return;
+        }
+        if (password.length < 6) {
+          showNotification("Password must be at least 6 characters.", "error");
+          return;
+        }
+
+        try {
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          const user = userCredential.user;
+
+          await sendEmailVerification(user);
+          showNotification(
+            "Verification email sent! Please check your inbox and verify before logging in.",
+            "info"
+          );
+
+          await setDoc(doc(db, "users", user.uid), {
+            name,
+            email,
+            phone,
+            total_points: 50,
+            welcome_bonus_claimed: true,
+            created_at: serverTimestamp(),
+            loyalty_level: "Bronze",
+            emailVerified: false,
+            // initialize the list of completed orders
+            completed_orders: [],
+          });
+
+          await addDoc(collection(db, "points_transactions"), {
+            user_id: user.uid,
+            points: 50,
+            transaction_type: "welcome_bonus",
+            description: "50 Welcome Points for Signing Up",
+            created_at: serverTimestamp(),
+          });
+
+          await sendNotification(
+            email,
+            "Welcome Bonus Received! 🎉",
+            `You've received 50 free loyalty points! Please verify your email to start earning.`
+          );
+
+          window.closeAuthModal();
+          showNotification(
+            "Registration successful! Please verify your email before logging in.",
+            "success"
+          );
+
+          await signOut(auth);
+          updateUserUI(null);
+        } catch (error) {
+          showNotification(error.message, "error");
+        }
+      };
+
+      window.loginUser = async function () {
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value;
+        if (!email || !password) {
+          showNotification("Please enter email and password.", "error");
+          return;
+        }
+        try {
+          const userCredential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          const user = userCredential.user;
+
+          if (!user.emailVerified) {
+            showNotification(
+              "Please verify your email address before logging in. A new verification link has been sent.",
+              "error"
+            );
+            await sendEmailVerification(user);
+            await signOut(auth);
+            updateUserUI(null);
+            return;
+          }
+
+          await updateDoc(doc(db, "users", user.uid), {
+            emailVerified: true,
+          });
+
+          window.closeAuthModal();
+          showNotification("Welcome back!", "success");
+          updateUserUI(user);
+        } catch (error) {
+          showNotification(error.message, "error");
+        }
+      };
+
+      window.socialLogin = async function (provider) {
+        try {
+          let authProvider;
+          if (provider === "google") {
+            authProvider = googleProvider;
+          }
+
+          const result = await signInWithPopup(auth, authProvider);
+          const user = result.user;
+
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (!userDoc.exists()) {
+            await setDoc(doc(db, "users", user.uid), {
+              name: user.displayName || "User",
+              email: user.email,
+              phone: user.phoneNumber || "",
+              total_points: 50,
+              welcome_bonus_claimed: true,
+              created_at: serverTimestamp(),
+              loyalty_level: "Bronze",
+              emailVerified: true,
+              completed_orders: [],
+            });
+            await addDoc(collection(db, "points_transactions"), {
+              user_id: user.uid,
+              points: 50,
+              transaction_type: "welcome_bonus",
+              description: "50 Welcome Points for Signing Up",
+              created_at: serverTimestamp(),
+            });
+            await sendNotification(
+              user.email,
+              "Welcome Bonus Received! 🎉",
+              `You've received 50 free loyalty points! Start earning more with every order.`
+            );
+            showNotification(
+              "Welcome! You received 50 free points! 🎉",
+              "success"
+            );
+            document.getElementById("welcome-modal").classList.add("active");
+          }
+          window.closeAuthModal();
+          updateUserUI(user);
+        } catch (error) {
+          showNotification(error.message, "error");
+        }
+      };
+
+      window.logoutUser = async function () {
+        try {
+          if (orderUnsubscriber) {
+            orderUnsubscriber();
+            orderUnsubscriber = null;
+          }
+          await signOut(auth);
+          localStorage.removeItem("rsd_current_user");
+          updateUserUI(null);
+          showNotification("Logged out successfully.", "info");
+          location.reload();
+        } catch (error) {
+          showNotification(error.message, "error");
+        }
+      };
+      window.closeWelcomeModal = function () {
+        document.getElementById("welcome-modal").classList.remove("active");
+      };
+
+      function updateUserUI(user) {
+        const loginLink = document.getElementById("login-link");
+        const dashboardLink = document.getElementById("dashboard-link");
+        const logoutLink = document.getElementById("logout-link");
+        const userNameDisplay = document.getElementById("user-name-display");
+        if (user) {
+          loginLink.style.display = "none";
+          dashboardLink.style.display = "block";
+          logoutLink.style.display = "block";
+          userNameDisplay.textContent =
+            user.displayName || user.email.split("@")[0];
+          loadUserPoints(user.uid);
+          listenForCompletedOrders(user.uid);
+        } else {
+          loginLink.style.display = "block";
+          dashboardLink.style.display = "none";
+          logoutLink.style.display = "none";
+          userNameDisplay.textContent = "Account";
+        }
+      }
+
+      async function loadUserPoints(userId) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", userId));
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            document.getElementById("dropdown-points").textContent =
+              data.total_points || 0;
+            localStorage.setItem("rsd_current_user", userId);
+          }
+        } catch (error) {
+          console.error("Error loading points:", error);
+        }
+      }
+
+      // ========== REAL-TIME ORDER LISTENER ==========
+      function listenForCompletedOrders(userId) {
+        if (orderUnsubscriber) {
+          orderUnsubscriber();
+          orderUnsubscriber = null;
+        }
+
+        const ordersRef = collection(db, "orders");
+        const q = query(
+          ordersRef,
+          where("user_id", "==", userId),
+          where("status", "==", "completed")
+        );
+
+        orderUnsubscriber = onSnapshot(q, async (snapshot) => {
+          // Get the user's current completed orders list
+          const userDocRef = doc(db, "users", userId);
+          const userDoc = await getDoc(userDocRef);
+          const userData = userDoc.data();
+          const completedOrdersList = userData.completed_orders || [];
+
+          snapshot.docChanges().forEach(async (change) => {
+            if (change.type === "added") {
+              const orderData = change.doc.data();
+              const orderId = change.doc.id;
+
+              // Check if this order ID is already in the completed_orders list
+              if (completedOrdersList.includes(orderId)) {
+                console.log(`Order ${orderId} already processed. Skipping.`);
+                return;
+              }
+
+              const orderAmount = orderData.subtotal || 0;
+              const pointsEarned = Math.floor(orderAmount / 100) * 5;
+
+              if (pointsEarned > 0) {
+                try {
+                  // 1. Add points to user
+                  await updateDoc(userDocRef, {
+                    total_points: increment(pointsEarned),
+                    // Add this order ID to the completed list so it never happens again
+                    completed_orders: [...completedOrdersList, orderId],
+                  });
+
+                  // 2. Record the transaction
+                  await addDoc(collection(db, "points_transactions"), {
+                    user_id: userId,
+                    order_id: orderId,
+                    points: pointsEarned,
+                    transaction_type: "earned",
+                    description: `Earned ${pointsEarned} points from order #${orderId} (${orderAmount} Ksh)`,
+                    created_at: serverTimestamp(),
+                  });
+
+                  // 3. Send notification
+                  const updatedUserDoc = await getDoc(userDocRef);
+                  const updatedUserData = updatedUserDoc.data();
+                  await sendNotification(
+                    updatedUserData.email,
+                    "Points Earned! 🎉",
+                    `You've earned ${pointsEarned} points from your recent order! Total: ${
+                      updatedUserData.total_points + pointsEarned
+                    } points`
+                  );
+
+                  showNotification(
+                    `🎉 You earned ${pointsEarned} points from your completed order!`,
+                    "success"
+                  );
+
+                  loadUserPoints(userId);
+                } catch (error) {
+                  console.error("Error awarding points:", error);
+                }
+              }
+            }
+          });
+        });
+      }
+
+      // ========== LOYALTY DASHBOARD ==========
+      window.showLoyaltyDashboard = function () {
+        const user = auth.currentUser;
+        if (!user) {
+          showNotification("Please login to view your rewards.", "error");
+          window.openAuthModal("login");
+          return;
+        }
+
+        if (!user.emailVerified) {
+          showNotification(
+            "Please verify your email address to access your rewards.",
+            "error"
+          );
+          return;
+        }
+
+        document.getElementById("loyalty-modal").classList.add("active");
+        loadLoyaltyData(user.uid);
+      };
+      window.closeLoyaltyModal = function () {
+        document.getElementById("loyalty-modal").classList.remove("active");
+      };
+
+      async function loadLoyaltyData(userId) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", userId));
+          if (!userDoc.exists()) return;
+          const userData = userDoc.data();
+          const points = userData.total_points || 0;
+          document.getElementById("loyalty-points").textContent = points;
+          document.getElementById("loyalty-level").textContent =
+            getLoyaltyLevel(points);
+
+          const rewardsSnapshot = await getDocs(collection(db, "rewards"));
+          const rewards = [];
+          rewardsSnapshot.forEach((doc) => {
+            rewards.push({ id: doc.id, ...doc.data() });
+          });
+
+          if (rewards.length === 0) {
+            const defaultRewards = [
+              {
+                reward_name: "Free Fresh Juice",
+                points_required: 300,
+                reward_type: "juice",
+                reward_value: 100,
+                icon: "🍹",
+              },
+              {
+                reward_name: "Free Fries",
+                points_required: 600,
+                reward_type: "fries",
+                reward_value: 150,
+                icon: "🍟",
+              },
+              {
+                reward_name: "KSh 300 Discount",
+                points_required: 1000,
+                reward_type: "discount",
+                reward_value: 300,
+                icon: "💵",
+              },
+              {
+                reward_name: "Free Shawarma Meal",
+                points_required: 1500,
+                reward_type: "shawarma",
+                reward_value: 250,
+                icon: "🌯",
+              },
+            ];
+            for (const reward of defaultRewards) {
+              await addDoc(collection(db, "rewards"), reward);
+            }
+            const newSnapshot = await getDocs(collection(db, "rewards"));
+            newSnapshot.forEach((doc) => {
+              rewards.push({ id: doc.id, ...doc.data() });
+            });
+          }
+
+          const redemptionsQuery = query(
+            collection(db, "reward_redemptions"),
+            where("user_id", "==", userId)
+          );
+          const redemptionsSnapshot = await getDocs(redemptionsQuery);
+          const redeemedIds = [];
+          redemptionsSnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.status === "active") {
+              redeemedIds.push(data.reward_id);
+            }
+          });
+
+          updateProgressBar(points, rewards);
+          renderRewards(points, rewards, redeemedIds, userId);
+        } catch (error) {
+          console.error("Error loading loyalty data:", error);
+          showNotification("Error loading rewards. Please try again.", "error");
+        }
+      }
+
+      function getLoyaltyLevel(points) {
+        if (points >= 1500) return "🥇 Gold";
+        if (points >= 1000) return "🥈 Silver";
+        if (points >= 600) return "🥉 Bronze";
+        return "⭐ Starter";
+      }
+
+      function updateProgressBar(points, rewards) {
+        let nextReward = null;
+        let nextPoints = Infinity;
+        for (const reward of rewards) {
+          if (
+            reward.points_required > points &&
+            reward.points_required < nextPoints
+          ) {
+            nextReward = reward;
+            nextPoints = reward.points_required;
+          }
+        }
+        if (nextReward) {
+          const progress = Math.min(
+            (points / nextReward.points_required) * 100,
+            100
+          );
+          document.getElementById("progress-fill").style.width = progress + "%";
+          document.getElementById("progress-percentage").textContent =
+            Math.floor(progress) + "%";
+          document.getElementById(
+            "next-reward-label"
+          ).textContent = `Progress to ${nextReward.reward_name}`;
+          document.getElementById(
+            "progress-text"
+          ).textContent = `${points} / ${nextReward.points_required} points needed`;
+        } else {
+          document.getElementById("progress-fill").style.width = "100%";
+          document.getElementById("progress-percentage").textContent = "100%";
+          document.getElementById("next-reward-label").textContent =
+            "All Rewards Unlocked!";
+          document.getElementById("progress-text").textContent =
+            "You've unlocked all rewards!";
+        }
+      }
+
+      function renderRewards(points, rewards, redeemedIds, userId) {
+        const grid = document.getElementById("rewards-grid");
+        grid.innerHTML = "";
+        rewards.forEach((reward) => {
+          const card = document.createElement("div");
+          card.className = "reward-card";
+          const isRedeemed = redeemedIds.includes(reward.id);
+          const isAvailable = points >= reward.points_required;
+          if (isRedeemed) {
+            card.style.borderColor = "#e8d5b5";
+            card.style.background = "#ffffff";
+          } else if (isAvailable) {
+            card.classList.add("available");
+          } else {
+            card.style.opacity = "0.6";
+          }
+          card.innerHTML = `
+            <div style="font-size: 3rem;">${reward.icon || "🎁"}</div>
+            <div style="font-weight: bold; margin: 10px 0; color: #2d2d2d;">${
+              reward.reward_name
+            }</div>
+            <div style="color: #7a8c6f; font-weight: bold;">${
+              reward.points_required
+            } Points</div>
+            ${
+              isRedeemed
+                ? `<button style="background: #e8d5b5; color: #2d2d2d; border: none; padding: 8px 20px; border-radius: 25px; cursor: default; font-weight: bold; margin-top: 10px;"><i class="fas fa-check"></i> Claimed</button>`
+                : isAvailable
+                ? `<button onclick="redeemReward('${reward.id}')" style="background: #2d2d2d; color: #ffffff; border: none; padding: 8px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: all 0.3s ease;">Redeem Now</button>`
+                : `<button disabled style="background: #999; color: white; border: none; padding: 8px 20px; border-radius: 25px; cursor: not-allowed; font-weight: bold; margin-top: 10px;">${points} / ${reward.points_required} pts</button>`
+            }
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      window.redeemReward = async function (rewardId) {
+        const user = auth.currentUser;
+        if (!user) {
+          showNotification("Please login to redeem rewards.", "error");
+          return;
+        }
+
+        if (!user.emailVerified) {
+          showNotification(
+            "Please verify your email address to redeem rewards.",
+            "error"
+          );
+          return;
+        }
+
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          const userData = userDoc.data();
+          const points = userData.total_points || 0;
+          const rewardDoc = await getDoc(doc(db, "rewards", rewardId));
+          if (!rewardDoc.exists()) {
+            showNotification("Reward not found.", "error");
+            return;
+          }
+          const reward = rewardDoc.data();
+          if (points < reward.points_required) {
+            showNotification(
+              `You need ${reward.points_required - points} more points.`,
+              "error"
+            );
+            return;
+          }
+
+          const existingQuery = query(
+            collection(db, "reward_redemptions"),
+            where("user_id", "==", user.uid),
+            where("reward_id", "==", rewardId),
+            where("status", "==", "active")
+          );
+          const existingSnapshot = await getDocs(existingQuery);
+          if (!existingSnapshot.empty) {
+            showNotification(
+              "You already have an active redemption for this reward.",
+              "error"
+            );
+            return;
+          }
+
+          const rewardCode = generateRewardCode(reward.reward_type);
+          await updateDoc(doc(db, "users", user.uid), {
+            total_points: increment(-reward.points_required),
+          });
+          await addDoc(collection(db, "reward_redemptions"), {
+            user_id: user.uid,
+            reward_id: rewardId,
+            reward_code: rewardCode,
+            points_used: reward.points_required,
+            status: "active",
+            redeemed_at: serverTimestamp(),
+          });
+          await addDoc(collection(db, "points_transactions"), {
+            user_id: user.uid,
+            points: -reward.points_required,
+            transaction_type: "redeemed",
+            description: `Redeemed ${reward.reward_name} (${rewardCode})`,
+            created_at: serverTimestamp(),
+          });
+
+          await sendNotification(
+            user.email,
+            "Reward Redeemed! 🎁",
+            `You've successfully redeemed ${reward.reward_name}!\nYour Code: ${rewardCode}`
+          );
+
+          showNotification(
+            `🎉 Success! You've redeemed ${reward.reward_name}! Code: ${rewardCode}`,
+            "success"
+          );
+          loadLoyaltyData(user.uid);
+          loadUserPoints(user.uid);
+        } catch (error) {
+          showNotification(
+            "Error redeeming reward. Please try again.",
+            "error"
+          );
+        }
+      };
+
+      function generateRewardCode(rewardType) {
+        const prefix = "RSD";
+        const typeMap = {
+          juice: "FJ",
+          fries: "FR",
+          discount: "DS",
+          shawarma: "SW",
+        };
+        const typeCode = typeMap[rewardType] || "RW";
+        const randomCode = Math.random()
+          .toString(36)
+          .substr(2, 6)
+          .toUpperCase();
+        return `${prefix}-${typeCode}-${randomCode}`;
+      }
+
+      // ========== NOTIFICATION ENGINE ==========
+      async function sendNotification(email, subject, message) {
+        console.log(`📧 Notification to ${email}: ${subject} - ${message}`);
+        try {
+          await addDoc(collection(db, "notifications"), {
+            email: email,
+            subject: subject,
+            message: message,
+            sent_at: serverTimestamp(),
+          });
+        } catch (error) {
+          console.error("Error saving notification to database:", error);
+        }
+      }
+
+      function showNotification(message, type = "info") {
+        const existing = document.querySelector(".notification");
+        if (existing) existing.remove();
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.innerHTML = message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          notification.style.opacity = "0";
+          setTimeout(() => notification.remove(), 500);
+        }, 5000);
+      }
+
+      // ========== AUTH STATE & INIT ==========
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          updateUserUI(user);
+          await loadUserPoints(user.uid);
+        } else {
+          updateUserUI(null);
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        loadCart();
+        document.querySelectorAll(".add-to-cart").forEach((button) => {
+          button.addEventListener("click", function () {
+            if (this.hasAttribute("onclick")) return;
+            const id = this.getAttribute("data-id"),
+              name = this.getAttribute("data-name"),
+              price = parseInt(this.getAttribute("data-price")),
+              image = this.getAttribute("data-image");
+            if (id) {
+              window.addToCart(id, name, price, image);
+            }
+          });
+        });
+
+        const searchInput = document.getElementById("search-input"),
+          searchButton = document.getElementById("search-button"),
+          noResults = document.getElementById("no-results");
+        function performSearch() {
+          const term = searchInput.value.toLowerCase().trim();
+          let hasResults = false;
+          document.querySelectorAll(".menu-category").forEach((cat) => {
+            let catHas = false;
+            cat.querySelectorAll(".menu-item").forEach((item) => {
+              const name =
+                  item.querySelector(".item-name")?.textContent.toLowerCase() ||
+                  "",
+                desc =
+                  item.querySelector(".item-desc")?.textContent.toLowerCase() ||
+                  "";
+              if (term === "" || name.includes(term) || desc.includes(term)) {
+                item.style.display = "block";
+                catHas = true;
+                hasResults = true;
+              } else item.style.display = "none";
+            });
+            cat.style.display = catHas || term === "" ? "block" : "none";
+          });
+          noResults.style.display =
+            hasResults || term === "" ? "none" : "block";
+        }
+        searchButton.addEventListener("click", performSearch);
+        searchInput.addEventListener("input", performSearch);
+        searchInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") performSearch();
+        });
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute("href"));
+            if (target) target.scrollIntoView({ behavior: "smooth" });
+          });
+        });
+        window.addEventListener("storage", () => loadCart());
+      });
+
+      console.log(
+        "🔥 Rongai Swahili Dishes Firebase initialized successfully!"
+      );
+    </script>
+  </body>
+</html>
