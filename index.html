@@ -890,7 +890,57 @@
         }
       }
     </style>
-  </head>
+  
+    <!-- Mobile Responsive Overrides -->
+    <style>
+      @media (max-width: 768px) {
+        /* Header & Navigation */
+        header { padding: 10px 0; }
+        .header-content { flex-direction: column; text-align: center; gap: 10px; }
+        nav ul { justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        nav ul li { margin: 0; }
+        .logo-text h1 { font-size: 1.4rem; }
+        .logo-text span { font-size: 0.8rem; letter-spacing: 1px; }
+        .logo-img { width: 50px; height: 50px; margin-right: 10px; }
+        
+        /* User Dropdown positioning */
+        .user-dropdown { right: -10px; min-width: 180px; }
+
+        /* Hero Section */
+        .hero { padding: 60px 15px 40px; }
+        .hero h2 { font-size: 2rem; }
+        .hero p { font-size: 1rem; padding: 0 10px; }
+        .halal-badge { width: 60px; height: 60px; top: 10px; right: 10px; }
+        .dish-circle { width: 90px; height: 90px; }
+        .dish-name { font-size: 12px; padding: 4px 10px; }
+
+        /* Menu Sections */
+        .section-title { font-size: 2rem; }
+        .menu-category { padding: 15px; margin-bottom: 30px; }
+        .category-title { font-size: 1.3rem; margin-bottom: 15px; }
+        .menu-items { grid-template-columns: 1fr; gap: 15px; }
+        .item-content { padding: 15px; }
+        .search-bar { max-width: 90%; }
+        
+        /* Contact & Footer */
+        .contact { padding: 40px 15px; }
+        .phone-numbers { font-size: 1rem; }
+        .address { font-size: 1rem; }
+        
+        /* Modals */
+        .auth-container, .welcome-content, .order-content { padding: 20px; width: 95%; }
+        
+        /* Cart Page Specific */
+        .cart-section { gap: 20px; }
+        .cart-items, .cart-summary, .checkout-form { padding: 15px; }
+        .cart-item { flex-direction: column; align-items: flex-start; gap: 15px; }
+        .item-controls { align-self: flex-end; margin-top: 10px; }
+        .form-col { min-width: 100%; }
+        .form-row { gap: 10px; }
+      }
+    </style>
+</head>
+
   <body>
     <!-- Header Section -->
     <header>
@@ -1608,6 +1658,13 @@
               <button class="add-to-cart" onclick="addToCart('smocha', 'Smocha', 70, 'smocha.jpg')">Add to Cart</button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Sweet Treats -->
+      <div class="menu-category" data-category="sweets">
+        <h3 class="category-title">SWEET TREATS</h3>
+        <div class="menu-items">
           <!-- Achari -->
           <div class="menu-item">
             <img src="achari.jpg" alt="Achari" class="item-image" onerror="handleImageError(this)" />
@@ -1617,13 +1674,6 @@
               <button class="add-to-cart" onclick="addToCart('achari', 'Achari', 150, 'achari.jpg')">Add to Cart</button>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Sweet Treats -->
-      <div class="menu-category" data-category="sweets">
-        <h3 class="category-title">SWEET TREATS</h3>
-        <div class="menu-items">
           <!-- Mabuyu Large -->
           <div class="menu-item">
             <img src="mabuyu.jpg" alt="Mabuyu" class="item-image" onerror="handleImageError(this)" />
@@ -1801,6 +1851,15 @@
 
         element.classList.add("selected");
         currentSizeSelections[baseId] = { name, price, image };
+
+        // Dynamically update the displayed price on the menu card
+        const menuItem = element.closest('.menu-item');
+        if (menuItem) {
+          const priceDisplay = menuItem.querySelector('.item-price');
+          if (priceDisplay) {
+            priceDisplay.textContent = price + " Ksh";
+          }
+        }
       };
 
       window.addToCartWithSize = function (baseId) {
